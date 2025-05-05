@@ -1,0 +1,22 @@
+{
+  "name": "strukt-js",
+  "version": "1.0.0",
+  "description": "Type-safe function registration and runtime validation — in the browser or any JS environment.",
+  "main": "strukt.js",
+  "keywords": [
+    "runtime",
+    "validation",
+    "function",
+    "types",
+    "javascript",
+    "structure",
+    "typed",
+    "registry"
+  ],
+  "license": "MIT",
+  "author": "obovoid",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/obovoid/strukt.js"
+  }
+}
