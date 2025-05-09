@@ -33,7 +33,7 @@ class Structure {
   validate(value) {
     if (Array.isArray(this.definition)) {
       if (!Array.isArray(value)) {
-        throw new TypeError('Expected an array');
+        throw new TypeError(`Validation failed: Expected an array, but received  ${typeof value}`);
       }
       const itemType = this.definition[0];
       for (const item of value) {
@@ -42,7 +42,7 @@ class Structure {
       return true
     } else if (typeof this.definition === 'object') {
       if (typeof value !== 'object' || value === null || Array.isArray(value)) {
-        throw new TypeError('Expected an object');
+        throw new TypeError(`Validation failed: Expected an object, but received ${typeof value}`);
       }
       for (let [key, expectedType] of Object.entries(this.definition)) {
         if (!(key in value)) {
@@ -72,7 +72,7 @@ class Structure {
 
     const TypeClass = typeRegistry[expectedType];
     if (!TypeClass) {
-      throw new TypeError(`Unknown type "${expectedType}"`);
+      throw new TypeError(`Unknown type "${expectedType}". Ensure the type is registered using registerType.`);
     }
     if (value instanceof TypeClass) {
       return value.value
@@ -99,26 +99,26 @@ class Structure {
 
 function registerFunction(funcToRegister, args) {
   if (typeof funcToRegister !== 'function') {
-    throw new TypeError('First argument must be a function');
+    throw new TypeError(`registerFunction error: Expected a function as the first argument, but received ${typeof funcToRegister}`);
   }
 
   if (f.hasOwnProperty(funcToRegister.name)) {
-    throw new Error(`Function "${funcToRegister.name}" is already registered`);
+    throw new Error(`registerFunction error: Function "${funcToRegister.name}" is already registered. Choose a unique name.`);
   }
 
   if (!Array.isArray(args)) {
-    throw new TypeError('Second argument must be an array of argument type names');
+    throw new TypeError(`registerFunction error: Expected an array of argument type names as the second argument, but received ${typeof args}`);
   }
 
   args.forEach(argTypeName => {
     if (!typeRegistry[argTypeName] && typeof argTypeName === 'string') {
-      throw new TypeError(`Unknown type: ${argTypeName}`);
+      throw new TypeError(`registerFunction error: Unknown type "${argTypeName}". Ensure the type is registered.`);
     }
   });
 
   f[funcToRegister.name] = function(...values) {
     if (values.length !== args.length) {
-      throw new TypeError(`Expected ${args.length} arguments, but got ${values.length}`);
+      throw new TypeError(`registerFunction error: Function "${funcToRegister.name}" expects ${args.length} arguments, but received ${values.length} arguments.`);
     }
   
     const mappedValues = values.map((value, index) => {
@@ -136,7 +136,7 @@ function registerFunction(funcToRegister, args) {
         const instance = new ExpectedType(value);
         return instance.value;
       } catch (err) {
-        throw new Error(`Failed to convert value at index ${index} to type ${args[index]}: ${err.message}`);
+        throw new Error(`registerFunction error: Failed to convert value at index ${index} to type "${args[index]}" in function "${funcToRegister.name}": ${err.message}`);
       }
     });
 
